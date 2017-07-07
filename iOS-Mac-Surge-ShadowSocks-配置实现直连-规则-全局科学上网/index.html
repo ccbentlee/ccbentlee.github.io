@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Surge+SS 配合Rule Group 实现代理/全局 自由切换"/>
+
+
+
+
+  <meta name="keywords" content="Surge,科学上网," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Cuckoo's Nest">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/"/>
+
+
+<meta name="description" content="前言前几天 Instagram 更新，让我想起了这个很久没开的 App, 进去一看发现图片不能显示。研究了一下 Surge 的 log 发现是更换了图片的网址，那就好办了，新建一条规则就搞定。">
+<meta name="keywords" content="Surge,科学上网">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Surge+SS 配合Rule Group 实现代理&#x2F;全局 自由切换">
+<meta property="og:url" content="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/index.html">
+<meta property="og:site_name" content="Cuckoo&#39;s Nest">
+<meta property="og:description" content="前言前几天 Instagram 更新，让我想起了这个很久没开的 App, 进去一看发现图片不能显示。研究了一下 Surge 的 log 发现是更换了图片的网址，那就好办了，新建一条规则就搞定。">
+<meta property="og:image" content="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img1.jpg">
+<meta property="og:image" content="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img2.png">
+<meta property="og:image" content="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img3.png">
+<meta property="og:updated_time" content="2017-07-06T17:01:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Surge+SS 配合Rule Group 实现代理&#x2F;全局 自由切换">
+<meta name="twitter:description" content="前言前几天 Instagram 更新，让我想起了这个很久没开的 App, 进去一看发现图片不能显示。研究了一下 Surge 的 log 发现是更换了图片的网址，那就好办了，新建一条规则就搞定。">
+<meta name="twitter:image" content="http://ccbentlee.github.io/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img1.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> Surge+SS 配合Rule Group 实现代理/全局 自由切换 - Cuckoo's Nest </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Cuckoo's Nest</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Surge+SS 配合Rule Group 实现代理/全局 自由切换
+        
+      </h1>
+
+      <time class="post-time">
+          5月 18 2016
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前几天 <a href="https://itunes.apple.com/cn/app/instagram/id389801252?mt=8">Instagram</a> 更新，让我想起了这个很久没开的 App, 进去一看发现图片不能显示。研究了一下 Surge 的 log 发现是更换了图片的网址，那就好办了，新建一条规则就搞定。</p>
+<a id="more"></a>
+<p><code>DOMAIN-SUFFIX,cdninstagram.com,Proxy,force-remote-dns</code>,然后这些关键字都是什么意思？之前一直不明白规则是怎么回事，正好没什么事就仔细研究了一下 Surge 的官方教程： <a href="https://medium.com/@scomper/surge-配置文件-a1533c10e80b#.274r3lpv2">Surge 新手使用指南</a>， <a href="https://medium.com/@scomper/surge-for-mac-简明指南-f6f357b8f09c#.wv9hqwds3">Surge for Mac 简明指南</a>，终于明白的差不多了，之前看的教程很多坑啊，很多地方没说明白，用法也不是正确的，今天就写一下容易出错的地方，同时实现了 iPhone 和 Mac 上自由切换直连、代理还是全局上网。如果这俩教程你打不开不要奇怪，那是因为 Medium 刚刚被墙了。所以好好配置科学上网的工具更是当务之急了。</p>
+<h1 id="iOS-教程"><a href="#iOS-教程" class="headerlink" title="iOS 教程"></a>iOS 教程</h1><p>首先你应该已经买了 <a href="https://itunes.apple.com/us/app/surge-web-developer-tool-proxy/id1040100637?mt=8">Surge</a>，并且已经有了 Shadowsocks 的 <a href="https://shadowsocks.com">账号</a></p>
+<p><img src="/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img1.jpg" alt="图1"></p>
+<h2 id="General"><a href="#General" class="headerlink" title="[General]"></a>[General]</h2><p>这是我配置好的规则截图。<code>[General]</code>部分你可以直接把下边的拷贝到你的规则里，具体怎么回事就不解释了，作者教程里有写。（这里一定要通过 iCloud 或者别的方式同步到电脑上编辑，手机上不支持下边的<code>custom</code>这种方式）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[General]</div><div class="line">skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, localhost, *.local, ::ffff:0:0:0:0/1, ::ffff:128:0:0:0/1</div><div class="line">bypass-tun = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12</div><div class="line">dns-server = 119.29.29.29, 223.5.5.5, 114.114.114.114</div><div class="line">loglevel = notify</div></pre></td></tr></table></figure>
+<h2 id="Proxy"><a href="#Proxy" class="headerlink" title="[Proxy]"></a>[Proxy]</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">[Proxy]</div><div class="line"># 自行修改服务器地址、端口、用户名、密码</div><div class="line">DIRECT = direct</div><div class="line">🇭🇰HK = https,1.2.3.4,443,username,password</div><div class="line">🇸🇬SG = custom,1.2.3.4,443,rc4-md5,password,http://custom/ss.module</div><div class="line">🇯🇵JP = https,1.2.3.4,443,username,password</div><div class="line">🇺🇸US = https,1.2.3.4,443,username,password</div><div class="line">[Proxy Group]</div><div class="line">Proxy = select,DIRECT,🇭🇰HK,🇸🇬SG,🇯🇵JP,🇺🇸US</div><div class="line">[Rule]</div><div class="line"># 规则部分请参照范例补充完善，此处仅示意</div><div class="line">DOMAIN-KEYWORD,umeng.co,REJECT</div><div class="line">DOMAIN-KEYWORD,google,Proxy,force-remote-dns</div><div class="line">GEOIP,CN,DIRECT</div><div class="line">FINAL,Proxy</div></pre></td></tr></table></figure>
+<p>这是官方给出的示例</p>
+<ul>
+<li>第一条中的<code>direct</code>是系统保留字，不能写错，<code>DIRECT</code>是别名，可以任意写，跟下边 [Proxy Group] 中对应</li>
+<li>注意看第这一条：<code>🇸🇬SG = custom,1.2.3.4,443,rc4-md5,password,http://custom/ss.module</code></li>
+</ul>
+<p>这是用 ss 方式必须遵守的格式。开头必须是 <code>custom</code>，其中 custom 在手机上是选不了的，只能在电脑上用编辑器编写（手机上的 Edit mode 也可以但是打字太麻烦了）。然后填写你的地址端口什么的。然后看最后这里：<code>http://custom/ss.module</code>，这个是 ss 模块，这里只是示例所以不起作用，所以按照图片里我填的这个：<code>http://nat.pw/ss.module</code>才会起作用，网上也有其他的请自行搜索。</p>
+<p>这是其中的一个服务器地址的规则。如果你的 ss 服务商提供了多个地址，那么每一条都必须遵照这种规则，就像图片里那样。我之前以为只要一条规则填写过 module 模块就可以其实是不行的。</p>
+<h2 id="Proxy-Group"><a href="#Proxy-Group" class="headerlink" title="[Proxy Group]"></a>[Proxy Group]</h2><p>这个是新功能。配合这个功能就可以实现自由选择是走直连、代理或者全局的方式了。</p>
+<p><img src="/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img2.png" alt="图2"></p>
+<p>这个是我配置完的界面，结合图1可以看到分为两个组：PROXY 和 DIRECT（会自动显示为全大写），每个组里是自己设置的服务器。你可以自己给组取名字，比如<code>FUCKGFW</code>或<code>FREEDOM</code>。</p>
+<p>这里要注意：</p>
+<ol>
+<li>每个组都要有<code>select</code>，这个代表当前选中的服务器。</li>
+<li>[Proxy Group] 中罗列的服务器必须在 [Proxy] 字段进行了具体的定义，而且可用，但是反过来 [Proxy]字段中可以写很多服务器， [Proxy Group] 可以只包含其中几个。</li>
+<li>如果你配置了多个组，每个组包含不同的代理，可以在规则后填入对应的组名来实现按不同的规则的定义来命名区分成不同的配置文件，或者用不同的命名区分服务器提供商。</li>
+<li>如果你用了 emoji 图标，注意图标和字母中间不要有空格</li>
+</ol>
+<p>配置完之后如果想：</p>
+<ul>
+<li>直连，就是完全不走代理，该撞墙撞墙，那么就 PROXY 和 DIRECT 组都选择<code>DIRECT</code></li>
+<li>按照规则被墙的走代理不被墙的直连，那就第一组选择除了 DIRECT 之外的服务器组别，第二组选择 <code>DIRECT</code> </li>
+<li>全部走代理，那就两组都不要选<code>DIRECT</code></li>
+</ul>
+<p>注意这里可能会产生困惑，我再啰嗦两句：第一个 <code>DIRECT</code> 是组名，第二个是代理名。两个都可以任意起名，只不过要对应好我之前说的。</p>
+<p>如果想要以上的不出现问题，那么在 [Rule] 字段必须正确配置，所有需要走代理的规则后填写第一个组名，然后倒数第二行<code>GEOIP,CN,第二个组名</code>这样。注意第一张图片里我的配置截图没截取到，只显示了[Host]，这个以后再说。</p>
+<h2 id="Rule"><a href="#Rule" class="headerlink" title="[Rule]"></a>[Rule]</h2><p>这里就是主要起作用的部分了。你可以配置适合自己的规则，也可以在网上<a href="https://gist.githubusercontent.com/raw/b0c6129840272c136a82/Main.conf">下载</a>别人配好的。但是建议自己弄明白方便以后 DIY</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"># 规则设置</div><div class="line">[Rule] </div><div class="line"># 基于域名判断并屏蔽（REJECT）请求</div><div class="line">DOMAIN,pingma.qq.com,REJECT</div><div class="line"></div><div class="line"># 基于域名后缀判断屏蔽（REJECT）请求</div><div class="line">DOMAIN-SUFFIX,flurry.com,REJECT</div><div class="line"></div><div class="line"># 基于关键词后缀判断走代理（Proxy），强制不尊重系统代理的请求走 Packet-Tunnel-Provider</div><div class="line">DOMAIN-KEYWORD,google,Proxy,force-remote-dns</div><div class="line"></div><div class="line"># 基于域名后缀判断请求走直连（DIRECT）</div><div class="line">DOMAIN-SUFFIX,126.net,DIRECT</div><div class="line"></div><div class="line"># Telegram.app 指定“no-resolve”Surge 忽略这个规则与域的请求。 </div><div class="line">IP-CIDR,91.108.56.0/22,Proxy,no-resolve </div><div class="line"># 判断是否是局域网，如果是，走直连</div><div class="line">IP-CIDR,192.168.0.0/16,DIRECT</div><div class="line"># 判断服务器所在地，如果是国内，走直连</div><div class="line">GEOIP,CN,DIRECT</div><div class="line"></div><div class="line"># 其他的走代理</div><div class="line">FINAL,Proxy</div></pre></td></tr></table></figure>
+<ul>
+<li>结尾必须是FINAL，指的是如果之前所有规则都不匹配的话应该如何处理，形成了一个闭环。</li>
+<li>注意看规则里的<code>Proxy</code>, 这个是要跟你之前的 [Proxy Group] 里对应的。如果你起了别的名字，那么在[Rule]的相应规则里要对应那个名字。</li>
+</ul>
+<p><img src="/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/img3.png" alt="图3"></p>
+<ul>
+<li>注意倒数第二行<code>GEOIP,CN,DIRECT</code>，指的是国内网站直连。这里<code>DIRECT</code>要跟你 Group 中的第二组名字相同。</li>
+</ul>
+<p>到这里基本就结束了。以后如果有什么打不开的网页，可以关闭 Surge 再打开把日志清空后，进入打不开的 App 或网址，然后去 Surge-&gt;Analytics-&gt;Recent Requests 找到疑似请求的网址，添加一条新规则。就像文章开头Instagram那样。</p>
+<p>你也可以在 FINAL 的后边添加这样一条：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> [URL Rewrite]</div><div class="line">^http://www.google.cn http://www.google.com</div></pre></td></tr></table></figure>
+<p>添加之后 iPhone 上如果设置 Google 为默认搜索引擎之后就可以正常搜索而不是出来一个需要点击 g.cn 那个框了。</p>
+<h1 id="Mac-教程"><a href="#Mac-教程" class="headerlink" title="Mac 教程"></a>Mac 教程</h1><p>Mac 版 Surge 首先要 <a href="http://surge.run/Surge-Mac.zip">下载</a>, 安装之后创建 ~/.surge.conf。以.开头的文件是隐藏文件，方式如下：</p>
+<ul>
+<li>首先打开 Finder，侧边栏选择个人文件夹，或者最上方 Menubar 点击前往-&gt;前往文件夹，输入~之后点回车。</li>
+<li>找到终端，复制并粘贴 <strong>defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder;</strong>，回车，就能在 Finder 中看到隐藏文件了。想恢复的话就再复制一下，注意把 true 改成 false。</li>
+<li>用文本编辑器创建并打开一个文档，把 iOS 版的规则文件通过iCloud 同步后里面的内容复制过来。 新建文档命名为<code>.surge.conf</code>。</li>
+</ul>
+<p>打开电脑上的 Surge，然后在 iOS 上的 More-&gt;Surge Mac Beta 标签中 Tap to activate 激活 Mac 版，注意手机和电脑要在同一个无线网内，或者都打开蓝牙。激活后请点击 Set as System Proxy 就可以正常使用了。</p>
+<p>至此 iPhone 和 Mac 都配置好了，如果有什么问题欢迎留言。</p>
+<p>Enjoy the free world.</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          
+            <a href="/tags/Surge/">Surge</a>
+          
+            <a href="/tags/科学上网/">科学上网</a>
+          
+        </div>
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/iOS 中自定义 Status Bar 的方法/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">iOS 中自定义 Status Bar 的方法</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/千呼万唤始出来/">
+        <span class="next-text nav-default">千呼万唤始出来</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2016 -
+    
+    2017
+    <span class="footer-author">Lee.</span>
+    <span class="power-by">
+        由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a> 强力驱动
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'motolee';
+  var disqus_identifier = 'iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/';
+
+  var disqus_title = "Surge+SS 配合Rule Group 实现代理/全局 自由切换";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

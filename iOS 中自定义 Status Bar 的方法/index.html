@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="iOS 中自定义 Status Bar 的方法"/>
+
+
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Cuckoo's Nest">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://ccbentlee.github.io/iOS 中自定义 Status Bar 的方法/"/>
+
+
+<meta name="description" content="前言Status Bar 在 iOS 7 扁平化风格之后有了很大变化，变成了跟 NavigationBar 融为一体的风格，当然也可以隐藏掉。至于实现的方法，从开始到现在有了很多变化，因此也就有了很多的坑。之前都是在网上搜索教程，试验失败就再找，成功的话就 Copy 过来，原理什么也不是很懂。而且 Apple 这坑货，经常使把 API 变来变去的，这个版本好用，下个版本就给你改没了。所以我就把我研">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 中自定义 Status Bar 的方法">
+<meta property="og:url" content="http://ccbentlee.github.io/iOS 中自定义 Status Bar 的方法/index.html">
+<meta property="og:site_name" content="Cuckoo&#39;s Nest">
+<meta property="og:description" content="前言Status Bar 在 iOS 7 扁平化风格之后有了很大变化，变成了跟 NavigationBar 融为一体的风格，当然也可以隐藏掉。至于实现的方法，从开始到现在有了很多变化，因此也就有了很多的坑。之前都是在网上搜索教程，试验失败就再找，成功的话就 Copy 过来，原理什么也不是很懂。而且 Apple 这坑货，经常使把 API 变来变去的，这个版本好用，下个版本就给你改没了。所以我就把我研">
+<meta property="og:updated_time" content="2017-07-06T17:37:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 中自定义 Status Bar 的方法">
+<meta name="twitter:description" content="前言Status Bar 在 iOS 7 扁平化风格之后有了很大变化，变成了跟 NavigationBar 融为一体的风格，当然也可以隐藏掉。至于实现的方法，从开始到现在有了很多变化，因此也就有了很多的坑。之前都是在网上搜索教程，试验失败就再找，成功的话就 Copy 过来，原理什么也不是很懂。而且 Apple 这坑货，经常使把 API 变来变去的，这个版本好用，下个版本就给你改没了。所以我就把我研">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> iOS 中自定义 Status Bar 的方法 - Cuckoo's Nest </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Cuckoo's Nest</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          iOS 中自定义 Status Bar 的方法
+        
+      </h1>
+
+      <time class="post-time">
+          7月 6 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Status Bar 在 iOS 7 扁平化风格之后有了很大变化，变成了跟 NavigationBar 融为一体的风格，当然也可以隐藏掉。至于实现的方法，从开始到现在有了很多变化，因此也就有了很多的坑。之前都是在网上搜索教程，试验失败就再找，成功的话就 Copy 过来，原理什么也不是很懂。而且 Apple 这坑货，经常使把 API 变来变去的，这个版本好用，下个版本就给你改没了。所以我就把我研究的结果在这里总结一下。<br><a id="more"></a></p>
+<blockquote>
+<p>环境：Xcode 8，iOS 9 &amp; iOS 10，Swift 3 </p>
+</blockquote>
+<h2 id="局部控制状态栏"><a href="#局部控制状态栏" class="headerlink" title="局部控制状态栏"></a>局部控制状态栏</h2><p>首先要知道 <code>info.plist</code> 中可以添加这么一个条目：<br><code>View controller-based status bar appearance</code>，默认值为 <code>YES</code>。这个从字面意思理解就是是否通过 ViewController 来控制 Status Bar 的样式。当设置为 <code>YES</code> 或者不手动添加条目时，我们就可以在当前的 ViewController 里重载变量来控制 Bar 的 Style、是否隐藏以及动画类型。重载的代码如下：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//控制 Style</span></div><div class="line"><span class="keyword">override</span> <span class="keyword">var</span> preferredStatusBarStyle: <span class="type">UIStatusBarStyle</span>&#123;</div><div class="line">    <span class="keyword">return</span> .lightContent</div><div class="line">&#125;</div><div class="line"><span class="comment">//控制隐藏</span></div><div class="line"><span class="keyword">override</span> <span class="keyword">var</span> prefersStatusBarHidden: <span class="type">Bool</span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"><span class="comment">//控制动画</span></div><div class="line"><span class="keyword">override</span> <span class="keyword">var</span> preferredStatusBarUpdateAnimation: <span class="type">UIStatusBarAnimation</span>&#123;</div><div class="line">    <span class="keyword">return</span> .slide</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>这种方法在 <code>iOS7 ~ iOS10</code> 都有效，但是只对执行了重载的 ViewController 有效果，并不是全局生效。</p>
+</blockquote>
+<p>大多数时候我们都需要全局设置样式，那么以上这种重载的方法就不起作用了。</p>
+<h2 id="全局控制状态栏"><a href="#全局控制状态栏" class="headerlink" title="全局控制状态栏"></a>全局控制状态栏</h2><p>在 <code>iOS7~iOS9</code> 中，全局控制状态栏的改变，只需要两步：</p>
+<ol>
+<li>添加属性 <code>View controller-based status bar appearance</code>，设置为 <code>NO</code></li>
+<li>添加如下代码：<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="type">UIApplication</span>.shared.statusBarStyle = .lightContent</div><div class="line"><span class="type">UIApplication</span>.shared.isStatusBarHidden = <span class="literal">true</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>上面方法最好放在 <code>AppDelegate.swift</code> 中，程序一开始就执行。</p>
+<blockquote>
+<p>经测试，以上两步在 <code>iOS10</code> 中也生效，网上教程说失效是因为使用了<code>setStatusBarStyle</code> 和 <code>setStatusBarHidden</code> 这两个方法（其实也不是失效，只是 Deprecated了，会有警告但是还生效）。</p>
+</blockquote>
+<p>此外还可以这样：（iOS9 和 iOS10 都生效）</p>
+<ol>
+<li>也是添加属性 View controller-based status bar appearance，并设置为 NO</li>
+<li>不需写代码，只要在 <code>Deployment Info</code> 修改 <code>Status Bar Style</code> 即可</li>
+</ol>
+<blockquote>
+<p>两种方法貌似有细微差别，第一种方法消失时有个 fade 效果，第二种则是运行时直接就不显示。</p>
+</blockquote>
+<h2 id="特殊情况"><a href="#特殊情况" class="headerlink" title="特殊情况"></a>特殊情况</h2><p>如果我们使用 <code>NavigationController</code>，会发现在原来的 ViewController 里修改状态栏的 style 不起作用了，但是控制状态栏的显示和隐藏依然OK。但是使用 <code>TabBarController</code> 依然正常，状态栏不受 <code>TabBarController</code>影响。</p>
+<h3 id="Navigation-Controller"><a href="#Navigation-Controller" class="headerlink" title="Navigation Controller"></a>Navigation Controller</h3><ul>
+<li>全局方法依然生效（别忘了 info.plist 添加项设为 <code>NO</code>）</li>
+<li>局部控制当前 ViewController 重载的方法部分失效</li>
+</ul>
+<p>这里失效是这样的，之前没嵌入时，ViewController 中 Custom Class 是你的脚本，脚本中重载来控制此 ViewController 的 Status Bar。但是嵌入到 Nav 后，你的脚本不是此 NavController 的 Custom Class，因此重载不会生效。同时所有 push 到这个 NavController 中的 ViewController 都共用 NavController 的 Navigation Item，因此也都不会生效。</p>
+<blockquote>
+<p>注意: prefersStatusBarHidden 和 preferredStatusBarUpdateAnimation 还生效。</p>
+</blockquote>
+<h3 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h3><p>我们看手机淘宝客户端，🔍宝贝的时候如果滑动屏幕，Navigation Bar 就会隐藏掉。有的 App 连 Status Bar 也会隐藏。那么如何隐藏 Navigation Bar 呢？在 <code>viewDidLoad</code> 中设置 <code>navigationController?.hidesBarsOnSwipe = true</code> 就行了。有趣的是，之前我们说过的嵌入到 NavigationController 后重载 <code>preferredStatusBarStyle</code> 让 Status Bar 显示 lightContent 的方法会失效，但是如果 <code>hidesBarsOnSwipe</code> 设为 <code>true</code>，向上滑动隐藏时，该方法又生效了。</p>
+<p>那么如何在隐藏 navigationBar 时也隐藏 status bar 呢？请看代码：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> hideStatusBar = <span class="literal">false</span></div><div class="line"></div><div class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">super</span>.viewDidLoad()</div><div class="line">    <span class="comment">//滑动的手势，添加监听事件</span></div><div class="line">    navigationController?.barHideOnSwipeGestureRecognizer.addTarget(<span class="keyword">self</span>, action: #selector(swipe))</div><div class="line">    navigationController?.hidesBarsOnSwipe = <span class="literal">true</span></div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="comment">// 在 swipe 方法中更改 hideStatusBar 的值</span></div><div class="line"><span class="keyword">override</span> <span class="keyword">var</span> prefersStatusBarHidden: <span class="type">Bool</span> &#123;</div><div class="line">    <span class="keyword">return</span> hideStatusBar</div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="comment">// Status Bar 隐藏的动画效果</span></div><div class="line"><span class="keyword">override</span> <span class="keyword">var</span> preferredStatusBarUpdateAnimation: <span class="type">UIStatusBarAnimation</span> &#123;</div><div class="line">    <span class="keyword">return</span> .slide</div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">swipe</span><span class="params">(recognizer: UISwipeGestureRecognizer)</span></span> &#123;</div><div class="line">    <span class="comment">//获得 navigationBar 的原点的 y 坐标值。iOS 中左上角为 (0.0, 0.0)点，y轴向下。</span></div><div class="line">    <span class="comment">//这里的 origin 在不隐藏时是 (0.0, 20.0)，隐藏后为 (0.0, -44.0)</span></div><div class="line">    <span class="comment">//因此 navBar 隐藏后使 hideStatusBar 为 true，执行一下 Update，就会把 statusBar 也隐藏</span></div><div class="line">    <span class="keyword">let</span> originY:<span class="type">CGFloat</span>! = navigationController?.navigationBar.frame.origin.y</div><div class="line">    hideStatusBar = originY &lt; <span class="type">CGFloat</span>(<span class="number">0</span>)</div><div class="line">    <span class="type">UIView</span>.animate(withDuration: <span class="number">0.2</span>) &#123;</div><div class="line">        <span class="keyword">self</span>.setNeedsStatusBarAppearanceUpdate()</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://www.jianshu.com/p/53fc09436624">iOS 填坑系列 - 状态栏变化</a><br><a href="http://www.jianshu.com/p/c2cb6f9b189e">iOS 知识小集（Status Bar变换）</a><br><a href="http://jumpingfrog0.github.io/2016/2016-03-26-status-bar-hidden/">iOS Status Bar 的隐藏</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/">iOS</a>
+          
+        </div>
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/iOS-Mac-Surge-ShadowSocks-配置实现直连-规则-全局科学上网/">
+        <span class="next-text nav-default">Surge+SS 配合Rule Group 实现代理/全局 自由切换</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2016 -
+    
+    2017
+    <span class="footer-author">Lee.</span>
+    <span class="power-by">
+        由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a> 强力驱动
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'motolee';
+  var disqus_identifier = 'iOS 中自定义 Status Bar 的方法/';
+
+  var disqus_title = "iOS 中自定义 Status Bar 的方法";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
